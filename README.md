@@ -244,21 +244,6 @@ The Streamlit dashboard connects directly to Snowflake Gold layer and shows:
 
 ---
 
-## Resume Highlights
-
-> Built an end-to-end ELT pipeline ingesting 120,000+ telecom records daily
-> using Azure Data Factory with parameterised incremental loads into Snowflake
-
-> Designed a Medallion architecture (Bronze/Silver/Gold) using dbt on Snowflake
-> with 7 data models and automated data quality checks
-
-> Orchestrated the full pipeline using Apache Airflow DAGs with failure alerting
-
-> Implemented CI/CD using GitHub Actions to auto-validate dbt models and data
-> quality on every push
-
----
-
 ## Author
 
 **Advithi** — Data Engineer  
