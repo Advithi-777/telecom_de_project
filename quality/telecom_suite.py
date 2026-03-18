@@ -1,19 +1,3 @@
-"""
-Telecom Data Quality Suite
-===========================
-Runs data quality checks on Snowflake Gold layer tables.
-Checks include:
-  - Row count thresholds
-  - Null value checks
-  - Value range validations
-  - Accepted value checks
-  - Unique column checks
-
-Usage:
-    pip install snowflake-connector-python pandas pyarrow python-dotenv
-    python quality/telecom_suite.py
-"""
-
 import snowflake.connector
 import os
 from dotenv import load_dotenv
@@ -62,7 +46,6 @@ def run_quality_checks():
 
     results = []
 
-    # ── Customer Monthly Summary Checks ──────────────────────────────────────
     print("\ncustomer_monthly_summary:")
     check(results, "row_count",
           len(customers) >= 4000,
@@ -88,7 +71,6 @@ def run_quality_checks():
           customers["MONTHLY_CHARGE"].between(5, 200).all(),
           "monthly charge between 5-200")
 
-    # ── Churn Risk Score Checks ───────────────────────────────────────────────
     print("\nchurn_risk_score:")
     check(results, "row_count",
           len(churn) >= 4000,
@@ -105,7 +87,6 @@ def run_quality_checks():
           ).all(),
           "valid risk labels")
 
-    # ── Tower Performance Checks ──────────────────────────────────────────────
     print("\ntower_performance:")
     check(results, "row_count",
           len(tower) >= 100,
@@ -122,7 +103,6 @@ def run_quality_checks():
           tower["DEGRADED_PCT"].between(0, 100).all(),
           "degraded pct between 0-100")
 
-    # ── Summary ───────────────────────────────────────────────────────────────
     print("\n" + "=" * 60)
     print("QUALITY CHECK SUMMARY")
     print("=" * 60)
@@ -141,4 +121,3 @@ def run_quality_checks():
 
 if __name__ == "__main__":
     run_quality_checks()
-
