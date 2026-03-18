@@ -1,0 +1,101 @@
+name: Telecom DE Pipeline CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # ── Job 1: dbt Tests ────────────────────────────────────────────────────────
+  dbt_test:
+    name: Run dbt Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dbt
+        run: pip install dbt-snowflake
+
+      - name: Create dbt profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml << EOF
+          dbt_telecom:
+            target: dev
+            outputs:
+              dev:
+                type: snowflake
+                account: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+                user: ${{ secrets.SNOWFLAKE_USER }}
+                password: ${{ secrets.SNOWFLAKE_PASSWORD }}
+                role: ACCOUNTADMIN
+                warehouse: TELECOM_WH
+                database: TELECOM_DB
+                schema: PUBLIC
+                threads: 4
+          EOF
+
+      - name: Run dbt compile
+        working-directory: ./dbt_telecom
+        run: dbt compile
+
+      - name: Run dbt test
+        working-directory: ./dbt_telecom
+        run: dbt test
+
+  # ── Job 2: Data Quality Checks ──────────────────────────────────────────────
+  data_quality:
+    name: Run Data Quality Checks
+    runs-on: ubuntu-latest
+    needs: dbt_test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install great-expectations \
+                      snowflake-connector-python \
+                      pandas pyarrow python-dotenv
+
+      - name: Run quality checks
+        env:
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+        run: python quality/telecom_suite.py
+
+  # ── Job 3: Lint Python files ─────────────────────────────────────────────────
+  lint:
+    name: Lint Python Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install flake8
+        run: pip install flake8
+
+      - name: Run flake8
+        run: |
+          flake8 ingestion/ quality/ dashboard/ \
+            --max-line-length=120 \
+            --ignore=E501,W503
