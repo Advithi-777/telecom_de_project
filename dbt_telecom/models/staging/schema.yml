@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Staged customers from Bronze layer"
+    columns:
+      - name: customer_id
+        description: "Unique customer identifier"
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_cdr
+    description: "Staged call detail records"
+    columns:
+      - name: cdr_id
+        description: "Unique CDR identifier"
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_billing
+    description: "Staged billing records"
+    columns:
+      - name: bill_id
+        description: "Unique bill identifier"
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_network_kpi
+    description: "Staged network KPI data"
+    columns:
+      - name: kpi_id
+        description: "Unique KPI identifier"
+        tests:
+          - unique
+          - not_null

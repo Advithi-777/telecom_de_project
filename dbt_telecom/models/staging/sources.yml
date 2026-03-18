@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: TELECOM_DB
+    schema: BRONZE
+    tables:
+      - name: customers
+        description: "Raw customer master data"
+      - name: cdr
+        description: "Raw call detail records"
+      - name: billing
+        description: "Raw billing records"
+      - name: network_kpi
+        description: "Raw network KPI data"
