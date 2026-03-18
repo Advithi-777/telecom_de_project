@@ -36,3 +36,22 @@ models:
         tests:
           - unique
           - not_null
+
+
+          - name: stg_billing
+    description: "Staged billing records from Bronze layer"
+    columns:
+      - name: bill_id
+        description: "Unique bill identifier"
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_network_kpi
+    description: "Staged network KPI data from Bronze layer"
+    columns:
+      - name: kpi_id
+        description: "Unique KPI identifier"
+        tests:
+          - unique
+          - not_null
